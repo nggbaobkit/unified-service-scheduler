@@ -105,7 +105,8 @@ it('returns structured validation, JSON, origin, host, content-type and routing 
 });
 
 it('reports explicit conflict without a partial write', async () => {
-  const response = await createProfileClient().post('/api/appointments').send(buildRequestBody(createConfirmationRequest({ localStart: `${day}T09:10` }))).expect(409);
+  const response = await createProfileClient().post('/api/appointments')
+    .send(buildRequestBody(createConfirmationRequest({ serviceId: 'inspection', localStart: `${day}T09:10` }))).expect(409);
   expect(response.body.error).toMatchObject({ code: 'BAY_BUSY', requestId: expect.any(String) });
   expect(listAppointments(context.db)).toHaveLength(2);
 });
