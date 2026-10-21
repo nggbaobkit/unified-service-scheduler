@@ -14,16 +14,32 @@ Setup and verification instructions are in [README.md](README.md).
 
 ## 2. Requirements
 
-### 2.1 Functional
+### 2.1 Requirements stated by the scenario
 
-- Choose a demo profile on entry, then select its vehicle, dealership, service, and desired start.
-- Respect service duration, dealership opening hours, technician shifts, and service qualifications.
-- Prevent overlapping bay, technician, and vehicle appointments.
-- Assign both resources automatically and persist the appointment.
-- Show availability before confirmation and show confirmed appointments after reload.
-- Show a seven-day date strip with week navigation and 15-minute start-time buttons for the selected day.
+The three requirements in [Scenario-A.md](Scenario-A.md) are:
 
-### 2.2 Non-functional
+1. Allow a user to request a service appointment for a specific vehicle, service type, dealership, and desired time.
+2. Before confirming, check that both a service bay and a qualified technician are available for the entire service duration.
+3. On success, persist an appointment associating the customer, vehicle, technician, and service bay.
+
+The scenario does not prescribe vehicle registration, a customer-vehicle ownership rule, working calendars, timezones, authentication, or a particular UI. The following choices make those details concrete for this implementation; they are not additional requirements quoted from the scenario.
+
+### 2.2 Scope assumptions and implementation choices
+
+| Area | Adopted assumption or boundary |
+|---|---|
+| Existing records | Customer and vehicle records already exist. The demo seeds them rather than providing registration or import workflows. |
+| Customer-vehicle association | Each vehicle is linked to one customer, and booking requests must use a vehicle linked to the selected customer record. This is a predefined association, not verification of legal ownership or authority to act for somebody else. |
+| Service catalog and duration | Every dealership uses the same global service catalog. Each service has a configured duration, rather than a duration supplied by the browser or calculated separately for each vehicle. |
+| Working calendar | All dealerships and technicians share one fixed weekday calendar, with a break between technician working periods. A service must fit entirely within one working period. Individual schedules, holidays, and overnight exceptions are excluded. |
+| Resource assignment | The system automatically assigns one qualified technician and one bay for the whole appointment. Bays within a dealership are interchangeable; specialized equipment or bay capabilities are not modeled. Technician qualifications still vary by individual. |
+| Time interpretation | A requested local time is interpreted in the dealership's IANA timezone, not the browser's timezone. Appointment instants are stored in UTC; ambiguous or nonexistent local times are rejected. |
+| Occupancy rules | Vehicle overlaps are rejected in addition to technician and bay overlaps. Exact back-to-back appointments are allowed; no extra preparation or cleanup buffer is added. |
+| Reservation timing | Displayed availability and time selection are advisory, not temporary holds. Confirmation rechecks availability and persists the booking atomically. |
+| Delivery and identity | This is a local, single-instance application with a backend API and browser client. Demo-profile selection supplies customer context but is not authentication; all profiles and data are fictional. |
+| UI scope | The browser shows seven days at a time with 15-minute start-time choices and lists persisted confirmations. This presentation is an implementation choice; the scenario only asks for a desired appointment time. |
+
+### 2.3 Non-functional goals for this implementation
 
 - Target a local single-instance application with a file-backed database.
 - Booking correctness takes precedence over accepting conflicting requests.
@@ -32,11 +48,13 @@ Setup and verification instructions are in [README.md](README.md).
 - Provide responsive, keyboard-accessible UI and explicit failures.
 - No numerical availability or throughput SLO has been specified. Production capacity requires measurement.
 
-### 2.3 Constraints and out of scope
+### 2.4 Constraints and out of scope
 
 This is a new application with no inherited framework.
 
-Demo-profile selection replaces password sign-in. Authentication, account provisioning, payments, notifications, cancellation/rescheduling, customer registration, administrative screens, and cloud hosting are out of scope. All dealerships use one global service catalog and one fixed working calendar. Per-dealership service menus, individual rotas, dealership-specific hours, overnight shifts, and holiday exceptions are not supported.
+- Identity and customer management: authentication, account provisioning, customer/vehicle registration, and legal-ownership verification.
+- Additional booking workflows: payments, notifications, cancellation/rescheduling, and administrative screens.
+- Operating variations and deployment: per-dealership service menus or hours, individual technician rotas, specialized bay capabilities, holiday/overnight exceptions, and cloud or multi-instance deployment.
 
 ## 3. System context
 
