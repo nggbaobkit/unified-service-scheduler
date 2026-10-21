@@ -52,11 +52,11 @@ export function seedCatalog(db: Store) {
     const qualification = db.prepare('INSERT INTO qualifications VALUES (?, ?) ON CONFLICT DO NOTHING');
     for (const [id, dealerId, name, specialty] of [
       ['c1', 'central', 'Maya', 'oil'], ['c2', 'central', 'Leo', 'brakes'],
-      ['c3', 'central', 'Quinn', 'oil'], ['r1', 'riverside', 'Nora', 'oil'],
+      ['c3', 'central', 'Quinn', null], ['r1', 'riverside', 'Nora', 'oil'],
       ['r2', 'riverside', 'Ishan', 'brakes'],
     ] as const) {
       technician.run(id, dealerId, name);
-      qualification.run(id, specialty);
+      if (specialty !== null) qualification.run(id, specialty);
       qualification.run(id, 'inspection');
     }
   }).immediate();

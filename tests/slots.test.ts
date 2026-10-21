@@ -38,7 +38,7 @@ it('returns exactly seven days of quarter-hour starts with complete service wind
 
 it('uses the same bay, qualification, full-shift, closing and vehicle rules as confirmation', () => {
   const oil = scheduler.getAvailabilityWindow(createSlotRequest({ startDate: day })).days[0]!;
-  expect(oil.slots.find(slot => slot.time === '09:15')).toMatchObject({ available: false, code: 'BAY_BUSY' });
+  expect(oil.slots.find(slot => slot.time === '09:15')).toMatchObject({ available: false, code: 'TECHNICIAN_BUSY' });
   expect(oil.slots.find(slot => slot.time === '16:45')).toMatchObject({ available: false, code: 'OUTSIDE_OPENING_HOURS' });
   const brakes = scheduler.getAvailabilityWindow(createSlotRequest({ startDate: day, serviceId: 'brakes', vehicleId: 'A2' })).days[0]!;
   expect(brakes.slots.find(slot => slot.time === '09:45')).toMatchObject({ available: false, code: 'TECHNICIAN_BUSY' });

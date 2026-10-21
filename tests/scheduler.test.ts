@@ -23,6 +23,8 @@ describe('booking invariants', () => {
     const data = getCatalog(context.db);
     expect([data.dealerships.length, data.bays.length, data.technicians.length, data.services.length,
       data.customers.length, data.vehicles.length]).toEqual([2, 4, 5, 3, 4, 5]);
+    expect(data.qualifications.filter(value => value.serviceId === 'oil').map(value => value.technicianId).sort())
+      .toEqual(['c1', 'r1']);
     expect(listAppointments(context.db)).toHaveLength(2);
     const oil = scheduler.confirmAppointment(createConfirmationRequest()).appointment;
     expect(oil).toMatchObject({ customerId: 'alex', vehicleId: 'A1', technicianName: 'Maya', bayId: 'C1', durationMinutes: 30 });
@@ -49,7 +51,7 @@ describe('booking invariants', () => {
   });
 
   it.each([
-    ['BAY_BUSY', { localStart: `${day}T09:10` }],
+    ['BAY_BUSY', { serviceId: 'inspection', localStart: `${day}T09:10` }],
     ['TECHNICIAN_BUSY', { serviceId: 'brakes', localStart: `${day}T09:45` }],
     ['OUTSIDE_TECHNICIAN_SHIFT', { serviceId: 'brakes', localStart: '2030-01-08T11:00' }],
     ['OUTSIDE_OPENING_HOURS', { serviceId: 'inspection', localStart: '2030-01-08T16:30' }],
