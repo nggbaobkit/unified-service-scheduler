@@ -183,10 +183,11 @@ Follow the customer to their vehicle, then to its appointments.
 erDiagram
     direction LR
     CUSTOMER ||--o{ VEHICLE : owns
+    CUSTOMER ||--o{ APPOINTMENT : requests
     VEHICLE ||--o{ APPOINTMENT : receives
 ```
 
-The appointment also stores the customer directly. The database checks that the customer and vehicle belong together.
+The database checks that the appointment's customer and vehicle belong together.
 
 ### 7.2 Dealership capacity
 
